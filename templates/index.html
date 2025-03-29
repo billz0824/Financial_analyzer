@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Financial Analyst Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Ask a Question about a Company</h1>
+        <form action="/ask" method="post" enctype="multipart/form-data">
+            <label for="company">Company:</label><br>
+            <input type="text" id="company" name="company" required><br>
+        
+            <label for="question">Your Question:</label><br>
+            <textarea id="question" name="question" rows="4" required></textarea><br>
+        
+            <label for="file">Upload Additional Documents (PDF or TXT):</label><br>
+            <input type="file" id="file" name="file" accept=".pdf,.txt"><br><br>
+        
+            <input type="submit" value="Ask">
+        </form>
+    </div>
+</body>
+</html>

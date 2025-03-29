@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Answer for {{ company }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Answer for {{ company }}</h1>
+        <p><strong>Question:</strong> {{ question }}</p>
+        <p><strong>Answer:</strong> {{ answer }}</p>
+
+        <h2>Sources:</h2>
+        <ul>
+        {% for source in sources %}
+            <li><a href="{{ source.url }}" target="_blank">{{ source.title }}</a></li>
+        {% endfor %}
+        </ul>
+
+        <br>
+        <a href="/">← Ask another question</a>
+    </div>
+</body>
+</html>
+
