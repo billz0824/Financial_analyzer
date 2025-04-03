@@ -41,8 +41,8 @@ class Trainer:
             elif isinstance(self.model, Linear_Model):
                 self.model.train(X_train, y_train, X_val, y_val,
                                  learning_rate=0.01,
-                                 epochs=50000,
-                                 log_interval=1000)
+                                 epochs=1000,
+                                 log_interval=100)
 
             else:
                 raise ValueError("Unsupported model class passed to Trainer.")

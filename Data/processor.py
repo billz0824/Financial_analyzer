@@ -11,7 +11,7 @@ from .downloader import downlaod_data
 
 class Baseline_CFG:
     target_col = 'neg_log_return'
-    other_targets = ['High', 'Low', 'Volume', 'Adj Close', 'Open']
+    other_targets = ['High', 'Low', 'Volume', 'Open', 'Close']
     scaler = MinMaxScaler()
     imputer = SimpleImputer(strategy='median')
     lags = [1, 10, 20, 50, 100]
@@ -22,8 +22,25 @@ class Baseline_CFG:
 
 def get_data(stock, start, end):
     path = downlaod_data(stock, start, end)
-    data = pd.read_csv(path, index_col='Date', parse_dates=True)
-    return data
+
+    # processing due to noisy download 
+    raw = pd.read_csv(path, header=None)
+    raw.columns = raw.iloc[0]
+    raw = raw[2:].copy()  # Skip first two rows (tickers + column labels)
+
+    # Clean column names and set proper Date index
+    raw.columns.name = None
+    raw.rename(columns={raw.columns[0]: 'Date'}, inplace=True)
+
+    # Strip whitespace and drop any accidental empty rows
+    raw['Date'] = raw['Date'].astype(str).str.strip()
+    raw = raw[raw['Date'].str.match(r'\d{4}-\d{2}-\d{2}')]
+    raw['Date'] = pd.to_datetime(raw['Date'], errors='coerce')
+    raw = raw.set_index('Date')
+    raw = raw[raw.index.notnull()]
+    raw = raw.apply(pd.to_numeric, errors='coerce')
+
+    return raw
 
 ###########################
 # BASE FEATURE GENERATION #
@@ -78,7 +95,7 @@ def baseline_feature_generator(dataset):
     ) * 100
     dataset['%D'] = dataset['%K'].rolling(3).mean().shift(1)
 
-    # SUGGESTED TARGET: Negative Log Return
+    # TARGET: Negative Log Return
     dataset['neg_log_return'] = -np.log(dataset['Close'].shift(-1) / dataset['Close'])
     return dataset.fillna(0)
 
@@ -117,6 +134,6 @@ def baseline_preprocessing(stock, start, end, scaler=Baseline_CFG.scaler, test_r
     X = scaler.fit_transform(X_df)
 
     # Further split into train/val sets
-    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=test_ratio, shuffle=True)
+    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=test_ratio, shuffle=False)
 
     return X_df, X_train, y_train, X_val, y_val, testing, scaler

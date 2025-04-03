@@ -1,8 +1,12 @@
 from flask import Flask, render_template, request
 import os
-import matplotlib.pyplot as plt
 import uuid
 from Execution.baseline_executer import execute_baseline_strategies
+
+import matplotlib
+matplotlib.use('Agg')  # Use a non-GUI backend for server environments
+import matplotlib.pyplot as plt
+
 
 app = Flask(__name__)
 PLOT_FOLDER = "static"
@@ -22,6 +26,9 @@ def compare():
 
     # Run only selected models
     all_results = execute_baseline_strategies(ticker, start_date, end_date, test_ratio, selected_models)
+    common_index = all_results["Buy and Hold"].index
+    for label in all_results:
+        all_results[label] = all_results[label].reindex(common_index)
 
     # Plot generation
     plot_filename = f"comparison_plot_{uuid.uuid4().hex}.png"
@@ -29,6 +36,7 @@ def compare():
 
     plt.figure(figsize=(18, 10))
     for label, df in all_results.items():
+        df = df.dropna(subset=["Funds"]).sort_index()
         plt.plot(df.index, df['Funds'], label=label)
     plt.title(f"Strategy Comparison for {ticker}")
     plt.xlabel("Date")
