@@ -1,9 +1,8 @@
 from flask import Flask, render_template, request
 import os
-from datetime import datetime
 import matplotlib.pyplot as plt
 import uuid
-from Execution import baseline_executer
+from Execution.baseline_executer import execute_baseline_strategies
 
 app = Flask(__name__)
 PLOT_FOLDER = "static"
@@ -22,7 +21,7 @@ def compare():
     selected_models = request.form.getlist("models")
 
     # Run only selected models
-    all_results = baseline_executer(ticker, start_date, end_date, test_ratio, selected_models)
+    all_results = execute_baseline_strategies(ticker, start_date, end_date, test_ratio, selected_models)
 
     # Plot generation
     plot_filename = f"comparison_plot_{uuid.uuid4().hex}.png"
