@@ -2,24 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Answer for {{ company }}</title>
+    <title>Backtest Results for {{ ticker }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Answer for {{ company }}</h1>
-        <p><strong>Question:</strong> {{ question }}</p>
-        <p><strong>Answer:</strong> {{ answer }}</p>
+        <h1>Backtest Results for {{ ticker }}</h1>
+        <p><strong>Time Period:</strong> {{ start }} to {{ end }}</p>
 
-        <h2>Sources:</h2>
-        <ul>
-        {% for source in sources %}
-            <li><a href="{{ source.url }}" target="_blank">{{ source.title }}</a></li>
-        {% endfor %}
-        </ul>
+        <h2>Strategy Performance Plot</h2>
+        <img src="{{ url_for('static', filename=plot_file) }}" alt="Strategy Comparison Plot"
+             style="width: 90%; max-width: 1000px; border: 1px solid #ccc; padding: 10px;"/>
+
+        <h2>Total Return by Strategy</h2>
+        <table cellpadding="8" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Strategy</th>
+                    <th>Total Return (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for strategy, return_pct in stats.items() %}
+                <tr>
+                    <td>{{ strategy }}</td>
+                    <td>{{ return_pct }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
         <br>
-        <a href="/">← Ask another question</a>
+        <a href="/">← Back to Comparison Form</a>
     </div>
 </body>
 </html>
