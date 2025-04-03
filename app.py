@@ -1,8 +1,6 @@
 from flask import Flask, render_template, request
-import random
 import os
-
-from PyPDF2 import PdfReader
+from datetime import datetime
 
 app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
@@ -12,33 +10,41 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def index():
     return render_template('index.html')
 
-@app.route('/ask', methods=['POST'])
-def ask():
-    company = request.form["company"]
-    question = request.form["question"]
-    file = request.files.get("file")
+@app.route('/compare', methods=['POST'])
+def compare():
+    ticker = request.form["ticker"]
+    start_date = request.form["start_date"]
+    end_date = request.form["end_date"]
+    test_ratio = request.form["test_ratio"]
+    algorithm_file = request.files.get("algorithm")
 
-    extracted_text = ""
-
-    if file:
-        filename = file.filename
+    # Save uploaded algorithm
+    saved_filename = ""
+    if algorithm_file:
+        filename = algorithm_file.filename
         file_path = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(file_path)
+        algorithm_file.save(file_path)
+        saved_filename = filename
 
-        if filename.endswith(".pdf"):
-            with open(file_path, "rb") as f:
-                reader = PdfReader(f)
-                extracted_text = "\n".join(page.extract_text() or "" for page in reader.pages)
+    # Validate date format
+    try:
+        start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+        end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+    except ValueError:
+        return "Invalid date format. Please use YYYY-MM-DD."
 
-        elif filename.endswith(".txt"):
-            with open(file_path, "r", encoding="utf-8") as f:
-                extracted_text = f.read()
+    # TODO: Run the uploaded model file on the data from start_date to end_date
+    # TODO: Compare with baseline strategies (e.g., buy-and-hold)
+    # This is where you'd load `file_path`, import or run the logic (with sandboxing for safety), and return results
 
-    # TODO: Use `company`, `question`, and `extracted_text` for RAG or answer generation
-    answer = "todo"
-    sources = "sources"
+    result = f"""
+    Ticker: {ticker}  
+    Time Period: {start_date} to {end_date}  
+    Uploaded model: {saved_filename}  
+    Result: TODO - run backtest and return performance comparison.
+    """
 
-    return render_template('results.html', company=company, question=question, answer=answer, sources=sources)
+    return render_template('results.html', result=result)
 
 if __name__ == '__main__':
     app.run(debug=True)

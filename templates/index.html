@@ -2,24 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Financial Analyst Assistant</title>
+    <title>Investment Model Comparer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Ask a Question about a Company</h1>
-        <form action="/ask" method="post" enctype="multipart/form-data">
-            <label for="company">Company:</label><br>
-            <input type="text" id="company" name="company" required><br>
-        
-            <label for="question">Your Question:</label><br>
-            <textarea id="question" name="question" rows="4" required></textarea><br>
-        
-            <label for="file">Upload Additional Documents (PDF or TXT):</label><br>
-            <input type="file" id="file" name="file" accept=".pdf,.txt"><br><br>
-        
-            <input type="submit" value="Ask">
+        <h1>Compare Your Investment Model</h1>
+        <form action="/compare" method="post" enctype="multipart/form-data">
+            <label for="ticker">Stock (or ticker):</label><br>
+            <input type="text" id="ticker" name="ticker" required><br>
+
+            <label for="start_date">Start Date (YYYY-MM-DD):</label><br>
+            <input type="date" id="start_date" name="start_date" required><br>
+
+            <label for="end_date">End Date (YYYY-MM-DD):</label><br>
+            <input type="date" id="end_date" name="end_date" required><br>
+
+            <label for="test_ratio">Test ratio:</label><br>
+            <input type="number" id="test_ratio" name="test_ratio" required><br>
+
+            <label for="algorithm">Upload Your Model (Python file or Jupyter Notebook):</label><br>
+            <input type="file" id="algorithm" name="algorithm" accept=".py,.ipynb" required><br><br>
+
+            <input type="submit" value="Compare">
         </form>
     </div>
 </body>
 </html>
+
